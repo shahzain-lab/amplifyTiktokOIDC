@@ -1,4 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { tiktokAuth } from '../functions/tiktokAuth/resource';
+import { tiktokGetToken } from '../functions/tiktokGetToken/resource';
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -7,11 +9,20 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
+  tiktokAuth: a
+    .query()
+    .arguments({
+      csrf: a.string(),
     })
-    .authorization((allow) => [allow.guest()]),
+    .returns(a.string())
+    .handler(a.handler.function(tiktokAuth)),
+  tiktokGetToken: a
+    .query()
+    .arguments({
+      code: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(tiktokGetToken)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
